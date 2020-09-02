@@ -19,7 +19,7 @@ _SendSmsState createState() => new _SendSmsState();
 class _SendSmsState extends State<SendSms> {
 static const platform = const MethodChannel('sendSms');
   Future<Bills> getFactureData() async{
-    var url =  'http://10.0.2.2:8000' ;
+    var url =  'http://192.168.1.5:8000/api/getFacture/' ;
     // Await the http get response, then decode the json-formatted response.
     var response = await http.get(url,headers:{"password":"12345678","Accept": "application/json, text/plain, */*"} );
 
@@ -31,7 +31,8 @@ static const platform = const MethodChannel('sendSms');
     }
 }
 Future<Bills> sendData(int id ,String status) async{
-    var url = 'http://10.0.2.2:8000';
+    var url = 'http://192.168.1.101:8000/api/smsSended';
+
     // Await the http get response, then decode the json-formatted response.
      http.post(url,headers:{ "Accept": "application/json","password":"12345678"},body: {
       "facture_id":"$id",
@@ -76,7 +77,7 @@ child: Column(
           String sa =   "\n قيمة الفاتورة الحالية هي $price  ريال " ;
           String depta=" مجموع الديون السابقة هو  $debt ريال ";
           sendSms(numberPhone,sa+s+depta);
-          sendData(id," success ");
+          sendData(id,"success");
           return Column(
             children: [
               Text(sa+s),
