@@ -19,7 +19,7 @@ _SendSmsState createState() => new _SendSmsState();
 class _SendSmsState extends State<SendSms> {
 static const platform = const MethodChannel('sendSms');
   Future<Bills> getFactureData() async{
-    var url =  'http://192.168.1.5:8000/api/getFacture/' ;
+    var url =  'http://192.168.1.101:8000/api/getFacture/' ;
     // Await the http get response, then decode the json-formatted response.
     var response = await http.get(url,headers:{"password":"12345678","Accept": "application/json, text/plain, */*"} );
 
