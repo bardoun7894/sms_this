@@ -18,9 +18,11 @@ _SendSmsState createState() => new _SendSmsState();
 }
 
 class _SendSmsState extends State<SendSms> {
-
+  bool enableFocus ;
+  String ipisnot="";
   TextEditingController _textController =new TextEditingController();
   bool isCorrect =false;
+  bool edit =false;
 static const platform = const MethodChannel('sendSms');
   Future<Bills> getFactureData() async{
     var url =  'http://${_textController.text}:8000/api/getFacture/' ;
@@ -62,67 +64,134 @@ RegExp regExp = new RegExp(
   caseSensitive: false,
   multiLine: true,
 );
+
 @override
 Widget build(BuildContext context) {
+print(isCorrect);
 
 return new Material(
 child: new Container(
 alignment: Alignment.center,
-child: Column(
+child: Padding(
+  padding: const EdgeInsets.all(28.0),
+  child:   Column(
+    children: [
+      TextFormField(
+        decoration: InputDecoration(
+          hintText: " ip أدخل ال  "
+        ),
+        controller: _textController,
+          enabled: enableFocus,
+        style: TextStyle(color: Colors.blueAccent,fontSize: 24),
 
-  children: [
-    TextFormField(
-      controller: _textController,
-      style: TextStyle(color: Colors.blueAccent,fontSize: 24),
+      ),
+
+
+    Padding(
+      padding: const EdgeInsets.only(top:18.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          FlatButton(
+            onPressed:(){
+
+              if(_textController.text.length!=0 && regExp.hasMatch(_textController.text)){
+                setState(() {
+                  enableFocus=false;
+                  isCorrect =true;
+                  edit=true;
+                });
+              }else{
+                setState(() {
+                  isCorrect =false;
+                  if(_textController.text.length==0){
+                    ipisnot="لم تدخل اي Ip";
+                  }
+                });
+                  }
+            } ,
+            color: edit ? Colors.grey : Colors.blueAccent,
+            child: Text("حفظ",style: TextStyle(color: Colors.white),),
+          ),
+        FlatButton(
+            onPressed:(){
+           setState(() {
+            enableFocus=true;
+            if(edit){
+              edit=false;
+            }   });  } ,
+            color:edit ?Colors.green:Colors.grey,
+
+            child: Text("تعديل",style: TextStyle(color: Colors.white),),
+
+          ),
+
+        ],
+
+      ),
     ),
-  FlatButton(
 
-    onPressed:(){
-      if(_textController.text.length!=0 || regExp.hasMatch(_textController.text)){
-        isCorrect =true;
-      }else{
-        isCorrect =false;
+    isCorrect ? FutureBuilder<Bills>(
+
+    future: getFactureData(),
+
+    builder: (context, snapshot) {
+
+    if (snapshot.hasData) {
+
+       return new  ListView.builder
+
+        (
+         shrinkWrap: true,
+          itemCount:snapshot.data.facture.length,
+          itemBuilder: (BuildContext ctxt, int i) {
+
+            int id =snapshot.data.facture[i].id;
+
+            String numberPhone =snapshot.data.facture[i].home.phone;
+
+            String userName =snapshot.data.facture[i].home.landlord;
+
+            String debt =snapshot.data.facture[i].home.debt;
+
+            String price =snapshot.data.facture[i].price;
+
+            String s = " $userName عزيزنا العميل "  ;
+
+            String sa =   " \n قيمة الفاتورة الحالية هي $price  ريال " ;
+
+            String depta=" مجموع الديون السابقة هو  $debt ريال ";
+
+             print("is sent");
+
+             sendSms(numberPhone,sa+ s +depta,id);
+
+            return;
+
+
 
           }
-    } ,
-    color: Colors.blueAccent,
-    child: Text("ابدأ",style: TextStyle(color: Colors.white),),
+
+      );
+
+
+
+    } else if (snapshot.hasError) {
+
+    return Text("${snapshot.error}");
+    }
+
+    // By default, show a loading spinner.
+
+    return CircularProgressIndicator();
+
+    },
+
+    ):Text(ipisnot,style: TextStyle(color: Colors.red),)
+
+    ],
+
   ),
-  FutureBuilder<Bills>(
-  future: getFactureData(),
-  builder: (context, snapshot) {
-  if (snapshot.hasData) {
-     return new  ListView.builder
-      (
-       shrinkWrap: true,
-        itemCount:snapshot.data.facture.length,
-        itemBuilder: (BuildContext ctxt, int i) {
-          int id =snapshot.data.facture[i].id;
-          String numberPhone =snapshot.data.facture[i].home.phone;
-          String userName =snapshot.data.facture[i].home.landlord;
-          String debt =snapshot.data.facture[i].home.debt;
-          String price =snapshot.data.facture[i].price;
-          String s = " $userName عزيزنا العميل ";
-          String sa =   " \n قيمة الفاتورة الحالية هي $price  ريال " ;
-          String depta=" مجموع الديون السابقة هو  $debt ريال ";
-          if(isCorrect){
-            sendSms(numberPhone,sa+ s +depta,id);
-            return null ;
-          }else{
-            return Text(" تأكد من ip");
-          }
-
-        }
-    );
-
-  } else if (snapshot.hasError) {
-  return Text("${snapshot.error}");
-  }
-  // By default, show a loading spinner.
-  return CircularProgressIndicator();
-  },
-  )
-  ],
 ),
 ),
 );
