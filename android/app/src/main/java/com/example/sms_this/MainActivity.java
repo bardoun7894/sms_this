@@ -17,10 +17,11 @@ import io.flutter.app.FlutterActivity;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.GeneratedPluginRegistrant;
-
 public class MainActivity extends FlutterActivity {
     private static final int MY_PERMISSIONS_REQUEST_SEND_SMS =0 ;
+
     private static final String CHANNEL = "sendSms";
+
     private MethodChannel.Result callResult;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +34,7 @@ public class MainActivity extends FlutterActivity {
                     public void onMethodCall(MethodCall call, MethodChannel.Result result) {
                         if(call.method.equals("send")){
                             String num = call.argument("phone");
+
                             String msg = call.argument("msg");
                             sendSMS(num,msg,result);
                         }else{
@@ -42,16 +44,18 @@ public class MainActivity extends FlutterActivity {
                 });
             }
     private void sendSMS(String phoneNo, String msg,MethodChannel.Result result) {
-
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
                 try {
                     SmsManager smsManager = SmsManager.getDefault();
                     smsManager.sendTextMessage(phoneNo, null, msg, null, null);
                     result.success("SMS Sent");
                 } catch (Exception ex) {
                     ex.printStackTrace();
-
                     result.error("Err","Sms Not Sent","");
                 }
+        }else{
+            result.error("Err","Sms Not Sent","");
+                 }
             }
 
 

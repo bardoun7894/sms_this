@@ -17,12 +17,12 @@ class SendSms extends StatefulWidget {
 _SendSmsState createState() => new _SendSmsState();
 }
 class _SendSmsState extends State<SendSms> {
+
 static const platform = const MethodChannel('sendSms');
   Future<Bills> getFactureData() async{
     var url =  'http://192.168.1.101:8000/api/getFacture/' ;
     // Await the http get response, then decode the json-formatted response.
     var response = await http.get(url,headers:{"password":"12345678","Accept": "application/json, text/plain, */*"} );
-
     if (response.statusCode == 200) {
       var jsonResponse = convert.jsonDecode(response.body);
       return Bills.fromJson(jsonResponse);
@@ -32,21 +32,25 @@ static const platform = const MethodChannel('sendSms');
 }
 Future<Bills> sendData(int id ,String status) async{
     var url = 'http://192.168.1.101:8000/api/smsSended';
-
     // Await the http get response, then decode the json-formatted response.
      http.post(url,headers:{ "Accept": "application/json","password":"12345678"},body: {
       "facture_id":"$id",
       "status":status
     }).then((value) =>print(value));
-
 }
 Future<Bills> futureBi;
-Future sendSms(String numb,String msg) async {
+Future sendSms(String numb,String msg ,int id ) async {
 try {
 final String result = await platform.invokeMethod('send',<String,dynamic>{"phone":"$numb","msg":"$msg"}); //Replace a 'X' with 10 digit phone number
 print(result);
 print("Send//SMS");
+if(id!=null){
+  sendData(id,"success");
+}
 } on PlatformException catch(e){
+  if(id!=null){
+    sendData(id,"failed");
+  }
 print(e.toString());
 }
 }
@@ -76,8 +80,7 @@ child: Column(
           String s = "$userName عزيزنا العميل ";
           String sa =   "\n قيمة الفاتورة الحالية هي $price  ريال " ;
           String depta=" مجموع الديون السابقة هو  $debt ريال ";
-          sendSms(numberPhone,sa+s+depta);
-          sendData(id,"success");
+          sendSms(numberPhone,sa+s+depta,id);
           return Column(
             children: [
               Text(sa+s),
