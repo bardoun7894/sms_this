@@ -39,10 +39,10 @@ public class MainActivity extends FlutterActivity {
                             sendSMS(num,msg,result);
                         }else{
                             result.notImplemented();
-                        }
+                            }
+                         }
+                       });
                     }
-                });
-            }
     private void sendSMS(String phoneNo, String msg,MethodChannel.Result result) {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
                 try {

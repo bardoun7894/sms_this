@@ -16,11 +16,14 @@ class SendSms extends StatefulWidget {
 @override
 _SendSmsState createState() => new _SendSmsState();
 }
+
 class _SendSmsState extends State<SendSms> {
 
+  TextEditingController _textController =new TextEditingController();
+  bool isCorrect =false;
 static const platform = const MethodChannel('sendSms');
   Future<Bills> getFactureData() async{
-    var url =  'http://192.168.1.101:8000/api/getFacture/' ;
+    var url =  'http://${_textController.text}:8000/api/getFacture/' ;
     // Await the http get response, then decode the json-formatted response.
     var response = await http.get(url,headers:{"password":"12345678","Accept": "application/json, text/plain, */*"} );
     if (response.statusCode == 200) {
@@ -31,7 +34,7 @@ static const platform = const MethodChannel('sendSms');
     }
 }
 Future<Bills> sendData(int id ,String status) async{
-    var url = 'http://192.168.1.101:8000/api/smsSended';
+    var url = 'http://${_textController.text}:8000/api/smsSended';
     // Await the http get response, then decode the json-formatted response.
      http.post(url,headers:{ "Accept": "application/json","password":"12345678"},body: {
       "facture_id":"$id",
@@ -54,7 +57,11 @@ if(id!=null){
 print(e.toString());
 }
 }
-
+RegExp regExp = new RegExp(
+ r'^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$',
+  caseSensitive: false,
+  multiLine: true,
+);
 @override
 Widget build(BuildContext context) {
 
@@ -62,7 +69,25 @@ return new Material(
 child: new Container(
 alignment: Alignment.center,
 child: Column(
+
   children: [
+    TextFormField(
+      controller: _textController,
+      style: TextStyle(color: Colors.blueAccent,fontSize: 24),
+    ),
+  FlatButton(
+
+    onPressed:(){
+      if(_textController.text.length!=0 || regExp.hasMatch(_textController.text)){
+        isCorrect =true;
+      }else{
+        isCorrect =false;
+
+          }
+    } ,
+    color: Colors.blueAccent,
+    child: Text("ابدأ",style: TextStyle(color: Colors.white),),
+  ),
   FutureBuilder<Bills>(
   future: getFactureData(),
   builder: (context, snapshot) {
@@ -77,16 +102,15 @@ child: Column(
           String userName =snapshot.data.facture[i].home.landlord;
           String debt =snapshot.data.facture[i].home.debt;
           String price =snapshot.data.facture[i].price;
-          String s = "$userName عزيزنا العميل ";
-          String sa =   "\n قيمة الفاتورة الحالية هي $price  ريال " ;
+          String s = " $userName عزيزنا العميل ";
+          String sa =   " \n قيمة الفاتورة الحالية هي $price  ريال " ;
           String depta=" مجموع الديون السابقة هو  $debt ريال ";
-          sendSms(numberPhone,sa+s+depta,id);
-          return Column(
-            children: [
-              Text(sa+s),
-              Text(depta),
-            ],
-          );
+          if(isCorrect){
+            sendSms(numberPhone,sa+ s +depta,id);
+            return null ;
+          }else{
+            return Text(" تأكد من ip");
+          }
 
         }
     );
