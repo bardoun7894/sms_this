@@ -1,5 +1,6 @@
 
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
@@ -25,9 +26,20 @@ class _SendSmsState extends State<SendSms> {
   bool edit =false;
 static const platform = const MethodChannel('sendSms');
   Future<Bills> getFactureData() async{
-    var url =  'http://${_textController.text}:8000/api/getFacture/' ;
+    var queryParameters = {
+      'password': '12345678',
+    };
+    var uri =  Uri.https('http://${_textController.text}:8000', '/api/getFacture/', queryParameters);
+    var response = await http.get(uri, headers: {
+     // HttpHeaders.authorizationHeader: 'Token $token',
+      HttpHeaders.contentTypeHeader: 'application/json',
+    });
+   // var url =  'http://${_textController.text}:8000/api/getFacture/' ;
     // Await the http get response, then decode the json-formatted response.
-    var response = await http.get(url,headers:{"password":"12345678","Accept": "application/json, text/plain, */*"} );
+//    var response = await http.get(url,headers:{
+//      HttpHeaders.contentTypeHeader: "application/json", // or whatever
+//
+//    } );
     if (response.statusCode == 200) {
       var jsonResponse = convert.jsonDecode(response.body);
       return Bills.fromJson(jsonResponse);
@@ -37,8 +49,12 @@ static const platform = const MethodChannel('sendSms');
 }
 Future<Bills> sendData(int id ,String status) async{
     var url = 'http://${_textController.text}:8000/api/smsSended';
+    var queryParameters = {
+      'password': '12345678',
+    };
+    var uri =  Uri.https('http://${_textController.text}:8000', '/api/smsSended/', queryParameters);
     // Await the http get response, then decode the json-formatted response.
-     http.post(url,headers:{ "Accept": "application/json","password":"12345678"},body: {
+     http.post(uri,headers:{ "Accept": "application/json"},body: {
       "facture_id":"$id",
       "status":status
     }).then((value) =>print(value));
