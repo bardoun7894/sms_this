@@ -57,8 +57,6 @@ public class MainActivity extends FlutterActivity {
             result.error("Err","Sms Not Sent","");
                  }
             }
-
-
 //protected void sendSMS(String phoneNo, String msg,MethodChannel.Result result) {
 //
 //    if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {

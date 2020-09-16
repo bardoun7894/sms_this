@@ -29,9 +29,8 @@ static const platform = const MethodChannel('sendSms');
     var queryParameters = {
       'password': '12345678',
     };
-    var uri =  Uri.https('http://${_textController.text}:8000', '/api/getFacture/', queryParameters);
-    var response = await http.get(uri, headers: {
-     // HttpHeaders.authorizationHeader: 'Token $token',
+    var uri =  Uri.http('http://${_textController.text}:8000', '/api/getFacture/', queryParameters);
+    var response = await http.get( uri, headers: {
       HttpHeaders.contentTypeHeader: 'application/json',
     });
    // var url =  'http://${_textController.text}:8000/api/getFacture/' ;
@@ -48,11 +47,11 @@ static const platform = const MethodChannel('sendSms');
     }
 }
 Future<Bills> sendData(int id ,String status) async{
-    var url = 'http://${_textController.text}:8000/api/smsSended';
+    //var url = 'http://${_textController.text}:8000/api/smsSended';
     var queryParameters = {
       'password': '12345678',
     };
-    var uri =  Uri.https('http://${_textController.text}:8000', '/api/smsSended/', queryParameters);
+    var uri =  Uri.http('http://${_textController.text}:8000', '/api/smsSended/',queryParameters);
     // Await the http get response, then decode the json-formatted response.
      http.post(uri,headers:{ "Accept": "application/json"},body: {
       "facture_id":"$id",
