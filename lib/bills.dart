@@ -1,6 +1,32 @@
+class data {
+  bool status;
+  String msg;
+  Bills bills;
+
+  data({this.status, this.msg, this.bills});
+
+  data.fromJson(Map<String, dynamic> json) {
+    status = json['status'];
+    msg = json['msg'];
+    bills = json['Bills'] != null ? new Bills.fromJson(json['Bills']) : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['status'] = this.status;
+    data['msg'] = this.msg;
+    if (this.bills != null) {
+      data['Bills'] = this.bills.toJson();
+    }
+    return data;
+  }
+}
+
 class Bills {
   List<Facture> facture;
+
   Bills({this.facture});
+
   Bills.fromJson(Map<String, dynamic> json) {
     if (json['facture'] != null) {
       facture = new List<Facture>();
@@ -9,6 +35,7 @@ class Bills {
       });
     }
   }
+
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     if (this.facture != null) {

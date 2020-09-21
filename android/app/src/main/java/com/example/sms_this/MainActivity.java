@@ -34,7 +34,6 @@ public class MainActivity extends FlutterActivity {
                     public void onMethodCall(MethodCall call, MethodChannel.Result result) {
                         if(call.method.equals("send")){
                             String num = call.argument("phone");
-
                             String msg = call.argument("msg");
                             sendSMS(num,msg,result);
                         }else{
@@ -43,19 +42,19 @@ public class MainActivity extends FlutterActivity {
                          }
                        });
                     }
-    private void sendSMS(String phoneNo, String msg,MethodChannel.Result result) {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
+    protected void sendSMS(String phoneNo, String msg,MethodChannel.Result result) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
                 try {
                     SmsManager smsManager = SmsManager.getDefault();
-                    smsManager.sendTextMessage(phoneNo, null, msg, null, null);
+                    smsManager.sendTextMessage(phoneNo, null, msg,null, null);
                     result.success("SMS Sent");
-                } catch (Exception ex) {
+                    } catch (Exception ex) {
                     ex.printStackTrace();
                     result.error("Err","Sms Not Sent","");
                 }
         }else{
-            result.error("Err","Sms Not Sent","");
-                 }
+         result.error("Err","Sms Not Sent","");
+         }
             }
 //protected void sendSMS(String phoneNo, String msg,MethodChannel.Result result) {
 //
@@ -65,7 +64,7 @@ public class MainActivity extends FlutterActivity {
 //            SmsManager smsManager = SmsManager.getDefault();
 //            smsManager.sendTextMessage(phoneNo, null, msg, null, null);
 //            result.success("SMS Sent");
-//           // Toast.makeText(getApplicationContext(), "SMS sent.",Toast.LENGTH_LONG).show();
+//          Toast.makeText(getApplicationContext(), "SMS sent.",Toast.LENGTH_LONG).show();
 //            }catch(Exception ex){
 //                ex.printStackTrace();
 //         result.error("Err","Sms Not Sent","");
