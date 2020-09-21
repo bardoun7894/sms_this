@@ -44,18 +44,19 @@ Future<Bills> sendData(int id ,String status) async{
      http.post(url,headers:{ "Accept": "application/json",'api_password':'12345678'},body: {
       "facture_id":"$id",
       "status": status
-    }) ;
+    }).then((value) => print(value.body)) ;
 }
 Future<Bills> futureBi;
 Future sendSms(String numb,String msg ,int id ) async {
 
 final String result = await platform.invokeMethod('send',<String,dynamic>{"phone":"$numb","msg":"$msg"});
-if(result=="SMS Sent"){
+if(result == "SMS Sent"){
+
   sendData(id,"success");
 }else{
-    sendData(id,"failed");
-}
 
+  sendData(id,"failed");
+}
 print("Send//SMS");
 
 }
@@ -152,31 +153,14 @@ child: SingleChildScrollView(
                 itemCount:snapshot.data.facture.length,
                 itemBuilder: (BuildContext ctxt, int i) {
                   List<Facture> l = snapshot.data.facture;
-
-                  sendSms(l[i].home.phone, "msg", 1);
-
-                  String s = " ${l[i].home.landlord} عزيزنا العميل "  ;
-                  String sa =   " \n قيمة الفاتورة الحالية هي ${l[i].price}  ريال " ;
-                  String depta=" مجموع الديون السابقة هو  ${l[i].home.debt} ريال ";
-                  String smsMessage =sa + s +depta;
-                  sendSms(l[i].home.phone, smsMessage,l[i].id);
-
-
-                  switch(status_msg){
-                    case "failed":
-                      return Center(child: Text("تعذر ارسال الرسالة",style: TextStyle(color: Colors.red,fontSize: 25,fontWeight: FontWeight.bold),));
-                      break;
-                    case"success":
-                      return Center(child: Text("تم ارسال الرسالة بنجاح",style: TextStyle(color: Colors.green,fontSize: 25,fontWeight: FontWeight.bold),));
-                      break;
-                    default:
-                      return Text("");
-                      break;
-                  }
+                  String smsMessage =" عزيزنا العميل${l[i].home.landlord } قيمة الفاتورة ${l[i].price} مجموع الديون هي ${l[i].home.debt} ";
+                  sendSms(l[i].home.phone,smsMessage,l[i].id);
+              return;
                 }
             );
 
             break;
+
         }
 
       } else if (snapshot.hasError) {
@@ -186,18 +170,20 @@ child: SingleChildScrollView(
 
       // By default, show a loading spinner.
 
-      return CircularProgressIndicator();
-
+   return CircularProgressIndicator();
       },
 
-      ):Text(ipisnot,style: TextStyle(color: Colors.red),)
+      ):Text(ipisnot,style: TextStyle(color: Colors.red),),
 
-      ],
+
+  ],
 
     ),
+
   ),
   ),
 ),
 );
 }
+
 }
