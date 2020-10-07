@@ -1,18 +1,24 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'dart:convert' as convert;
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 import 'model/bills.dart';
 
 class FactureData with ChangeNotifier{
 
   static const platform = const MethodChannel('sendSms');
-String ip_url ="";
-String status_message ="";
+  bool enableFocus ;
+  bool isCorrect = false;
+  bool edit = false;
+String ip_url = "";
+String status_message ;
+ String ip_is_not = "";
 
   Future<Bills> getFactureData() async {
     var url =  'http://${ip_url}:8000/api/getFacture/';
@@ -39,13 +45,52 @@ Future<Bills> sendData(int id ,String status) async{
 Future sendSms(String numb,String msg ,int id ) async {
   final String result = await platform.invokeMethod('send',<String,dynamic>{"phone":"$numb","msg":"$msg"});
   if(result == "SMS Sent"){
-    sendData(id,"success");
     status_message ="success";
+    print(" ${status_message}  sendsms");
+    sendData(id,"success");
+    notifyListeners();
   }else{
-    sendData(id,"failed");
     status_message ="failed";
+    sendData(id,"failed");
+    print("${status_message}  sendsms");
+    notifyListeners();
   }
-  print("Send//SMS");
+  print("Send//SMS   ${status_message}");
 }
+
+changeVis(ip_url){
+  RegExp regExp = new RegExp(
+    r'^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$',
+    caseSensitive: false,
+    multiLine: true,
+  );
+  if(ip_url.length!=0 && regExp.hasMatch(ip_url)){
+    print(ip_url);
+    enableFocus= false;
+    isCorrect = true;
+    edit = true;
+  }else{
+    isCorrect =false;
+    if(ip_url.length==0   ){
+      ip_is_not = "  ip لم تدخل اي  ";
+    }
+    if(!regExp.hasMatch(ip_url)){
+      ip_is_not = "خاطئ ip ";
+    }
+  }
+  print("ff $ip_is_not");
+  notifyListeners();
+
+}
+
+editIp(){
+  enableFocus=true;
+  if(edit){
+    edit=false;
+    print("dd ${enableFocus}");
+  }
+    notifyListeners();
+}
+
 
 }

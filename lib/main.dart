@@ -9,9 +9,11 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sms_this/facture.dart';
+import 'package:sms_this/fut_widget.dart';
 
 import 'model/bills.dart';
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
 runApp(     new MaterialApp(
   title: "Rotation Demo",
   home: MultiProvider(
@@ -26,22 +28,14 @@ runApp(     new MaterialApp(
   ),
  );
 }
-class SendSms extends StatefulWidget {
 
-@override
-_SendSmsState createState() => new _SendSmsState();
-}
 
-class _SendSmsState extends State<SendSms> {
+class SendSms extends StatelessWidget {
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-  bool enableFocus ;
-  String ipisnot="";
+
   TextEditingController _textController =new TextEditingController();
-  bool isCorrect =false;
-  bool edit =false;
+
 static const platform = const MethodChannel('sendSms');
-
-
 
 
 //  Future<Bills> getFactureData() async {
@@ -77,15 +71,11 @@ Future<Bills> futureBi;
 //print("Send//SMS");
 //}
 
-RegExp regExp = new RegExp(
- r'^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$',
-  caseSensitive: false,
-  multiLine: true,
-);
+
 
 @override
 Widget build(BuildContext context) {
-  final bloc =Provider.of<FactureData>(context,listen: false);
+  final bloc =Provider.of<FactureData>(context);
 return new Material(
 child: SingleChildScrollView(
   child:   new Container(
@@ -99,7 +89,7 @@ child: SingleChildScrollView(
             hintText: " ip أدخل ال  "
           ),
           controller: _textController,
-            enabled: enableFocus,
+            enabled: bloc.enableFocus,
           style: TextStyle(color: Colors.blueAccent,fontSize: 24),
         ),
       Padding(
@@ -110,87 +100,23 @@ child: SingleChildScrollView(
             FlatButton(
               onPressed:(){
                bloc.ip_url = _textController.text ;
-                if(_textController.text.length!=0 && regExp.hasMatch(_textController.text)){
-                  setState(() {
-                    enableFocus=false;
-                    isCorrect =true;
-                    edit=true;
-                  });
-                }else{
-                  setState(() {
-                    isCorrect =false;
-                    if(_textController.text.length==0){
-                      ipisnot="لم تدخل اي Ip";
-                    }
-                  });
-                    }
+               bloc.changeVis(bloc.ip_url);
               } ,
-              color: edit ? Colors.grey : Colors.blueAccent,
+              color: bloc.edit ? Colors.grey : Colors.blueAccent,
               child: Text("حفظ",style: TextStyle(color: Colors.white),),
             ),
             FlatButton(
               onPressed:(){
-             setState(() {
-              enableFocus=true;
-              if(edit){
-                edit=false;
-                  }});  } ,
-              color:edit ?Colors.green:Colors.grey,
-
+                bloc.editIp();
+              }  ,
+              color:bloc.edit ?Colors.green:Colors.grey,
               child: Text("تعديل",style: TextStyle(color: Colors.white),),
-
             ),
           ],
         ),
       ),
-      isCorrect ? FutureBuilder<Bills>(
-      future:bloc.getFactureData(),
-      builder: (context, snapshot) {
-      if (snapshot.hasData) {
-        switch(snapshot.connectionState){
-          case ConnectionState.none:
-            print('none') ;
-         CircularProgressIndicator(backgroundColor: Colors.blue,);
-            break;
-          case ConnectionState.waiting:
-            // TODO: Handle this case.
-            print('waiting');
-      CircularProgressIndicator(backgroundColor: Colors.blue,);
-            break;
-          case ConnectionState.active:
-          case ConnectionState.done:
-            print('done');
-            return Column(
-              children: [
-           ListView.builder(
-                    shrinkWrap: true,
-                    itemCount:snapshot.data.facture.length,
-                    itemBuilder: (BuildContext ctxt, int i) {
-                      List<Facture> l = snapshot.data.facture;
-                      String smsMessage =" عزيزنا العميل${l[i].home.landlord } قيمة الفاتورة ${l[i].price} مجموع الديون هي ${l[i].home.debt} ";
-                      bloc.sendSms(l[i].home.phone,smsMessage,l[i].id);
-                 return;
-                    }
-                 ),
-          Center(child:bloc.status_message=="success"? Text( " ${bloc.status_message}",style: TextStyle(color: Colors.green,fontSize: 20,fontWeight:FontWeight.bold),):Text("${bloc.status_message}",style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold,color: Colors.red),))
+      bloc.isCorrect ? FWidget(context):Center(child: Text("${bloc.ip_is_not}",style: TextStyle(color: Colors.red,fontWeight: FontWeight.bold,fontSize: 20),))
 
-        ],
-            );
-            break;
-
-        }
-
-      } else if (snapshot.hasError) {
-
-      return Text("${snapshot.error}");
-      }
-
-      // By default, show a loading spinner.
-
-   return CircularProgressIndicator();
-      },
-
-      ):Text(ipisnot,style: TextStyle(color: Colors.red),)
   ],
 
     ),
