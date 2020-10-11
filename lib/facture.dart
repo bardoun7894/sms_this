@@ -48,11 +48,11 @@ Future sendSms(String numb,String msg ,int id ) async {
   if(result == "SMS Sent"){
     status_message ="success";
     print(" ${status_message}  sendsms");
-   await sendData(id,"success");
+  await sendData(id,"success");
     notifyListeners();
   }else{
     status_message ="failed";
-    await  sendData(id,"failed");
+   await  sendData(id,"failed");
     print("${status_message}  sendsms");
     notifyListeners();
   }
