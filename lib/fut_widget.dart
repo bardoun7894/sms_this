@@ -29,18 +29,17 @@ Widget FWidget(BuildContext context){
                     shrinkWrap: true,
                     itemCount:snapshot.data.facture.length,
                     itemBuilder: (BuildContext ctxt, int i) {
-                      List<Facture> l = snapshot.data.facture;
+                      List<Facture> l = snapshot.data.facture ;
                       String smsMessage =" عزيزنا العميل${l[i].home.landlord } قيمة الفاتورة ${l[i].price} مجموع الديون هي ${l[i].home.debt} ";
                      b.sendSms(l[i].home.phone,smsMessage,l[i].id).then(
-                             (value) => print(value)
+                      (value) => print(value)
                      );
                       print("${b.status_message} m ");
                    return;
                     }
-                ),
+                 ),
          Center(child:b.status_message=="success"? Text( "تم ارسال الرسالة بنجاح",style:TextStyle(color: Colors.green,fontSize: 20,fontWeight:FontWeight.bold),):( b.status_message=="failed"?Text("لم يتم ارسال الرسالة تأكد من الاتصال ؟",style: TextStyle(fontSize: 20,fontWeight:FontWeight.bold,color: Colors.red),):Text("")))
-
-      ],
+                  ],
             );
             break;
         }

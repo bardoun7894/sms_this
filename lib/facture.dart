@@ -42,21 +42,32 @@ Future<Bills> sendData(int id ,String status) async{
   }).then((value) => print("post ${value.body} ")) ;
   notifyListeners();
 }
+
 Future sendSms(String numb,String msg ,int id ) async {
   final String result = await platform.invokeMethod('send',<String,dynamic>{"phone":"$numb","msg":"$msg"});
   print(result);
   if(result == "SMS Sent"){
+
     status_message ="success";
-    print(" ${status_message}  sendsms");
+
+    print(" ${status_message} sendsms");
+
   await sendData(id,"success");
-    notifyListeners();
+
+    notifyListeners () ;
+
   }else{
+
     status_message ="failed";
+
    await  sendData(id,"failed");
+
     print("${status_message}  sendsms");
+    id++;
     notifyListeners();
   }
-  print("Send//SMS   ${status_message}");
+  print(" Send//SMS ${status_message} " );
+
   notifyListeners();
 }
 
