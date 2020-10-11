@@ -39,23 +39,25 @@ Future<Bills> sendData(int id ,String status) async{
   http.post(url,headers:{ "Accept": "application/json",'api_password':'12345678'},body: {
     "facture_id":"$id",
     "status": status
-  }).then((value) => print(value.body)) ;
+  }).then((value) => print("post ${value.body} ")) ;
   notifyListeners();
 }
 Future sendSms(String numb,String msg ,int id ) async {
   final String result = await platform.invokeMethod('send',<String,dynamic>{"phone":"$numb","msg":"$msg"});
+  print(result);
   if(result == "SMS Sent"){
     status_message ="success";
     print(" ${status_message}  sendsms");
-    sendData(id,"success");
+   await sendData(id,"success");
     notifyListeners();
   }else{
     status_message ="failed";
-    sendData(id,"failed");
+    await  sendData(id,"failed");
     print("${status_message}  sendsms");
     notifyListeners();
   }
   print("Send//SMS   ${status_message}");
+  notifyListeners();
 }
 
 changeVis(ip_url){
@@ -63,34 +65,38 @@ changeVis(ip_url){
     r'^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$',
     caseSensitive: false,
     multiLine: true,
-  );
+                 );
   if(ip_url.length!=0 && regExp.hasMatch(ip_url)){
     print(ip_url);
-    enableFocus= false;
-    isCorrect = true;
-    edit = true;
-  }else{
+    // enableFocus = false;
+   isCorrect = true;
+    // edit = true;
+      }
+      else
+      {
     isCorrect =false;
-    if(ip_url.length==0   ){
-      ip_is_not = "  ip لم تدخل اي  ";
-    }
-    if(!regExp.hasMatch(ip_url)){
-      ip_is_not = "خاطئ ip ";
-    }
-  }
+    if (ip_url.length==0)
+         {
+            ip_is_not = "  ip لم تدخل اي  ";
+         }
+    if(!regExp.hasMatch(ip_url))
+         {
+            ip_is_not = "خاطئ ip ";
+
+         }
+   }
   print("ff $ip_is_not");
   notifyListeners();
-
 }
-
 editIp(){
   enableFocus=true;
-  if(edit){
+  if(edit)
+  {
     edit=false;
     print("dd ${enableFocus}");
   }
-    notifyListeners();
-}
+  notifyListeners();
+       }
 
 
 }

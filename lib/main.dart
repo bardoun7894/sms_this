@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -12,119 +11,140 @@ import 'package:sms_this/facture.dart';
 import 'package:sms_this/fut_widget.dart';
 
 import 'model/bills.dart';
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-runApp(     new MaterialApp(
-  title: "Rotation Demo",
-  home: MultiProvider(
-      providers: [
+  runApp(
+    new MaterialApp(
+      title: "Rotation Demo",
+      home: MultiProvider(providers: [
         ChangeNotifierProvider(
-        create: (BuildContext context) {
-         return FactureData();
-        },
+          create: (BuildContext context) {
+            return FactureData();
+          },
         )
-      ],
-  child: new SendSms()),
-  ),
- );
+      ], child: new SendSms()),
+    ),
+  );
 }
 
-
 class SendSms extends StatelessWidget {
-  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  TextEditingController _textController = new TextEditingController();
 
-  TextEditingController _textController =new TextEditingController();
-
-static const platform = const MethodChannel('sendSms');
-
-
-//  Future<Bills> getFactureData() async {
-//    var url =  'http://${_textController.text}:8000/api/getFacture/';
-//    var response = await http.get( url,headers:{
-//      HttpHeaders.contentTypeHeader: "application/json",'api_password':'12345678'// or whatever
-//    } );
-//    if (response.statusCode == 200) {
-//      var jsonResponse = convert.jsonDecode(response.body);
-//      return data.fromJson(jsonResponse).bills;
-//    } else {
-//      print('Request failed with status: ${response.statusCode}.');
-//    }
-//}
-//Future<Bills> sendData(int id ,String status) async{
-//   var url = 'http://${_textController.text}:8000/api/smsSended';
-//     http.post(url,headers:{ "Accept": "application/json",'api_password':'12345678'},body: {
-//      "facture_id":"$id",
-//      "status": status
-//    }).then((value) => print(value.body)) ;
-//
-//}
-Future<Bills> futureBi;
-
-//Future sendSms(String numb,String msg ,int id ) async {
-//
-//final String result = await platform.invokeMethod('send',<String,dynamic>{"phone":"$numb","msg":"$msg"});
-//if(result == "SMS Sent"){
-//  sendData(id,"success");
-//}else{
-//  sendData(id,"failed");
-//}
-//print("Send//SMS");
-//}
-
-
-
-@override
-Widget build(BuildContext context) {
-  final bloc =Provider.of<FactureData>(context);
-return new Material(
-child: SingleChildScrollView(
-  child:   new Container(
-  alignment: Alignment.center,
-  child: Padding(
-    padding: const EdgeInsets.all(28.0),
-    child:   Column(
-      children: [
-        TextFormField(
-          decoration: InputDecoration(
-            hintText: " ip أدخل ال  "
-          ),
-          controller: _textController,
-            enabled: bloc.enableFocus,
-          style: TextStyle(color: Colors.blueAccent,fontSize: 24),
-        ),
-      Padding(
-        padding: const EdgeInsets.only(top:18.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+  static const platform = const MethodChannel('sendSms');
+  @override
+  Widget build(BuildContext context) {
+    final bloc = Provider.of<FactureData>(context);
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        primary: true,
+      ),
+      body: SingleChildScrollView(
+        child: Stack(
           children: [
-            FlatButton(
-              onPressed:(){
-               bloc.ip_url = _textController.text ;
-               bloc.changeVis(bloc.ip_url);
-              } ,
-              color: bloc.edit ? Colors.grey : Colors.blueAccent,
-              child: Text("حفظ",style: TextStyle(color: Colors.white),),
+            Container(
+              height: MediaQuery.of(context).size.height * .2,
+              decoration: BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(50),
+                      bottomRight: Radius.circular(50))),
             ),
-            FlatButton(
-              onPressed:(){
-                bloc.editIp();
-              }  ,
-              color:bloc.edit ?Colors.green:Colors.grey,
-              child: Text("تعديل",style: TextStyle(color: Colors.white),),
+            Padding(
+              padding: const EdgeInsets.only(top: 40.0),
+              child: Container(
+                alignment: Alignment.center,
+                child: Padding(
+                  padding: const EdgeInsets.all(28.0),
+                  child: Column(
+                    children: [
+                      Container(
+                        height: 50,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: Colors.white,
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 18.0, left: 10),
+                          child: TextFormField(
+                            decoration:
+                                InputDecoration(hintText: " ip أدخل ال  "),
+                            controller: _textController,
+                            enabled: bloc.enableFocus,
+                            style: TextStyle(
+                                color: Colors.blueAccent, fontSize: 24),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 40.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Container(
+                              child: FlatButton(
+
+                                onPressed: () {
+                                  bloc.ip_url = _textController.text;
+                                  bloc.changeVis(bloc.ip_url);
+                                },
+                                child: Row(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(right:18.0),
+                                      child: Icon(Icons.arrow_back_ios,color: Colors.white,),
+                                    ),
+                                    Text(
+                                      "   ارسل الرسائل   ",
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+
+                                  ],
+                                ),
+                              ),
+                              decoration: BoxDecoration(
+                                  color:  bloc.edit ? Colors.grey : Colors.blueAccent,
+                                  borderRadius: BorderRadius.circular(20)),
+                            ),
+
+                          ],
+                        ),
+                      ),
+                      Padding(padding: EdgeInsets.only(top: 50),
+
+                      ),
+                      // FlatButton(
+                      //   onPressed: () {
+                      //     bloc.editIp();
+                      //   },
+                      //   color: bloc.edit ? Colors.green : Colors.grey,
+                      //   child:Text(
+                      //     "تعديل",
+                      //     style: TextStyle(color: Colors.white),
+                      //   ),
+                      // ),
+                      bloc.isCorrect
+                          ? FWidget(context)
+                          : Center(
+                              child: Text(
+                              "${bloc.ip_is_not}",
+                              style: TextStyle(
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20),
+                            ))
+                    ],
+                  ),
+                ),
+              ),
             ),
           ],
         ),
       ),
-      bloc.isCorrect ? FWidget(context):Center(child: Text("${bloc.ip_is_not}",style: TextStyle(color: Colors.red,fontWeight: FontWeight.bold,fontSize: 20),))
-
-  ],
-
-    ),
-
-  ),
-  ),
-),
-);
-}
-
+    );
+  }
 }

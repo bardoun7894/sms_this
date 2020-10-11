@@ -31,7 +31,9 @@ Widget FWidget(BuildContext context){
                     itemBuilder: (BuildContext ctxt, int i) {
                       List<Facture> l = snapshot.data.facture;
                       String smsMessage =" عزيزنا العميل${l[i].home.landlord } قيمة الفاتورة ${l[i].price} مجموع الديون هي ${l[i].home.debt} ";
-                      b.sendSms(l[i].home.phone,smsMessage,l[i].id);
+                     b.sendSms(l[i].home.phone,smsMessage,l[i].id).then(
+                             (value) => print(value)
+                     );
                       print("${b.status_message} m ");
                    return;
                     }
