@@ -84,7 +84,6 @@ class SendSms extends StatelessWidget {
                           children: [
                             Container(
                               child: FlatButton(
-
                                 onPressed: () {
                                   bloc.ip_url = _textController.text;
                                   bloc.changeVis(bloc.ip_url);

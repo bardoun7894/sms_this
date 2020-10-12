@@ -34,7 +34,9 @@ Widget FWidget(BuildContext context){
                      b.sendSms(l[i].home.phone,smsMessage,l[i].id).then(
                       (value) => print(value)
                      );
-                      print("${b.status_message} m ");
+                     if(b.status_message=="failed"){
+                      i++;
+                        }
                    return;
                     }
                  ),

@@ -60,10 +60,10 @@ Future sendSms(String numb,String msg ,int id ) async {
 
     status_message ="failed";
 
-   await  sendData(id,"failed");
+    await  sendData(id,"failed");
 
-    print("${status_message}  sendsms");
-    id++;
+    print("${status_message} sendsms");
+
     notifyListeners();
   }
   print(" Send//SMS ${status_message} " );
